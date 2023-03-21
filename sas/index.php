@@ -17,7 +17,7 @@ if(!isset($usuario)){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style/stylechisgas.css">
-
+    <link rel="shortcut icon" href="img/taylor.png">
     <!-- Bootstrap CSS -->
 
     <title>Inicio</title>
@@ -31,8 +31,8 @@ if(!isset($usuario)){
 		   <!-- HTML !-->
         <div class="contenedor">
        <div class="container">
-       <a href="orden/orden.php" class="button-27" role="button">Nueva orden </a>
-       <a class="button-27" role="button">Buscar</a>
+       <a href="clientes/clientes.php" class="button-27" role="button"><img src="img/factura.png" class="factura" alt=""><br> Nueva orden </a>
+       <a href="calendario/calendario.php" class="button-27" role="button"><img src="img/calendario.png" class="factura" alt=""><br> Calendario </a>
        <a class="button-27" role="button">Estadisticas</a>
        </div>
        </div>

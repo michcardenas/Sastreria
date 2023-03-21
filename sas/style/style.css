@@ -81,8 +81,19 @@ body {
 .btn-black{
     background-color: #000 !important;
     color: #fff;
+    z-index: 0;
 }
-
+#imagen_fondo{
+    z-index: 1;
+    padding-left: 3rem;
+   
+}
+@media (max-width: 480px) {
+    #imagen_fondo {
+      width: 6rem;
+      height: 5rem;
+    }
+}
 /* ---- fin login------- */
 
- 
+
