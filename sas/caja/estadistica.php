@@ -8,19 +8,19 @@ if(!isset($usuario)){
     header("location: login/login.php");
 
 }else {
-  
+  $fecha_query = $_REQUEST['fecha'];
     if($conexion){
-                $sql=mysqli_query($conexion,"SELECT DATE(f.fecha_entrega) AS fecha, 
-                COUNT(CASE WHEN f.estado IS NOT NULL THEN f.id_cliente END) AS total_clientes, 
-                 COUNT(CASE WHEN f.estado = 2 THEN  f.id_cliente END) AS total_entregas,
-                 COUNT(CASE WHEN f.estado = 1 THEN  f.id_cliente END) AS total_arreglados,
-                  COUNT(CASE WHEN f.estado = 0 THEN  f.id_cliente END) AS total_pendientes,
-                SUM(f.estimacion_total) AS total_estimaciones
-         FROM factura f
-         JOIN clientes c ON f.id_cliente = c.id
-         GROUP BY DATE(f.fecha_entrega)
-         HAVING COUNT(CASE WHEN f.estado IS NOT NULL THEN f.id_cliente END) > 0
-         ORDER BY DATE(f.fecha_entrega);
+                $sql=mysqli_query($conexion,"SELECT c.abono, 
+                c.id_orden, 
+                c.saldo, 
+                cl.nombre, 
+                c.fecha, 
+                c.fecha_saldo 
+         FROM caja c
+         LEFT JOIN factura f ON c.id_orden = f.id 
+         LEFT JOIN clientes cl ON cl.id = f.id_cliente 
+         WHERE DATE(c.fecha) = '$fecha_query' OR DATE(c.fecha_saldo) = '$fecha_query';
+         
          
             
                     ");
@@ -43,7 +43,7 @@ if(!isset($usuario)){
     </head>
     <body >
         <nav class="nav-index">
-        <h3 class="inicio" > Aqui podras gestionar tus arreglos </h3>
+        <h3 class="inicio" > Gestion de caja </h3>
         <a  href="../index.php" ><img style="width: 3rem;" id="imagen_nav" class="imagen_nav" src="../img/sasindex.png" alt="index"></a>
 
         <a class="inicio" href="../login/salirlogin.php">salir</a>
@@ -64,37 +64,43 @@ if(!isset($usuario)){
             <div class="container-ordenes">
             <?php if($sql){
                     echo "<table class='table-ordenes'>";
-                    echo "<tr><th>Fecha de entrega</th><th> # Clientes</th><th>Estimacion</th><th>Pendientes</th></tr>";
+                    echo "<tr><th>Nombre</th><th># Pago</th><th>Fecha y hora</th></tr>";
                   
-
+                    $total_suma_total = 0;
                     while($row = mysqli_fetch_array($sql)){
                         $fecha_entrega = $row['fecha'];
+                        $fecha_formateada_url = date('Y-m-d', strtotime($fecha_entrega));
                         $fecha_formateada = date('m-d', strtotime($fecha_entrega));
 
-                        $numero_clientes = $row['total_clientes'];
-                        $total_minutos = $row['total_estimaciones'];
-                        $total_entregas = $row['total_entregas'];
-                        $total_arreglados = $row['total_arreglados'];
-                        $total_pendientes = $row['total_pendientes'];
-                        $style="";
-                        if($numero_clientes== $total_entregas){
-                            $style="style='color:green'";
+                        $nombre = $row['nombre'];
+                        $id_orden = $row['id_orden'];
+                        $abono = $row['abono'];
+                        $saldo = $row['saldo'];
+                        $fecha = $row['fecha']; //$fecha = 2023-08-09 10:39:17
+                        $fecha_saldo = $row['fecha_saldo'];    //$fecha_saldo= 2023-08-11 10:39:24
+                        $fecha_obj = DateTime::createFromFormat('Y-m-d H:i:s', $fecha);
+                        $fecha_formateada = $fecha_obj->format('Y-m-d');
+                        
+                        
+                        if ($fecha_query == $fecha_formateada) {
+                            $suma_total = $abono;
+                            $fecha_pago =  $fecha ;
+                        } else {
+                            $suma_total = $saldo;
+                            $fecha_pago =  $fecha_saldo ;
                         }
-                        $pendientes = $numero_clientes - ($total_arreglados +  $total_entregas );
+                        $total_suma_total += $suma_total; 
+                                          echo "<tr>";
+                        echo "<td ><a >". $nombre."</a></td>";
+                        echo "<td>$".number_format($suma_total, 0, '.', ',')."</td>";
 
-                        $fecha_param = urlencode($fecha_entrega); // codificar la fecha como un parámetro GET
-                        echo "<tr>";
-                        echo "<td ><a ".$style." href='detalle_orden.php?fecha=".$fecha_param."'>". $fecha_formateada."</a></td>";
-                        echo "<td>".$numero_clientes."</td>";
-                        $horas = floor($total_minutos / 60);
-                        $minutos = $total_minutos % 60;
-                        echo "<td>".$horas.":".sprintf('%02d', $minutos)." Horas</td>";
-                        echo "<td>". $pendientes ."</td>";
+                        echo "<td>".$fecha_pago."</td>";
 
                         echo "</tr>";
                     }
                     echo "</table>";
                 }
+                echo "Total dia: $" . number_format($total_suma_total, 0, '.', ',');
                 ?>
 
     

@@ -30,7 +30,11 @@ body {
 .main {
     padding: 0px 10px;
 }
-
+.info{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
 @media screen and (max-height: 450px) {
     .sidenav {padding-top: 15px;}
 }
@@ -93,6 +97,7 @@ body {
       width: 6rem;
       height: 5rem;
     }
+  
 }
 /* ---- fin login------- */
 

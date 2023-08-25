@@ -7,7 +7,26 @@ if(!isset($usuario)){
 
 }else {
   
+  $id = mysqli_real_escape_string($conexion, $_REQUEST['id']);
+  $sql = mysqli_query($conexion, "SELECT nombre, telefono FROM clientes WHERE id = $id");
+  
+  if (!$sql) {
+    echo "Error: " . mysqli_error($conexion);
+  }
+  
+  if (mysqli_num_rows($sql) > 0) {
+    while ($row = mysqli_fetch_assoc($sql)) {
+      $nombre = $row['nombre'];
+      $telefono = $row['telefono'];
+      // Do something with $nombre and $telefono variables
+    }
+  } else {
+    echo "No records found.";
+  }
+  
+  mysqli_close($conexion);
 
+  
   
  
   
@@ -36,19 +55,11 @@ if(!isset($usuario)){
        <div class="container">
        
       <div class="container-orden">
-       <form id="form" method="POST" action="../callbacks/clientes.php">
+       <form id="form" method="POST" action="../callbacks/clientes.php?mode=editar">
         <div class="info">
-       
-                
-              
-        <div class="valor_center">
-        <img id="usuario" src="../img/usuario.png" alt="Cliente">  <input class="input"  type="text" name="txtname" id="txtname" placeholder="Nombre">
-        </div>
-        <div class="valor_center">
-        <img id="usuario" src="../img/telefono.png" alt="Cliente"> <input class="input" type="number"  id="txttel"  name="txttel" placeholder="Numero celular">
-
-        </div>
-          <input class="input" hidden type="number"  id="id"  name="id" value="0">
+          <input class="input"  type="text" name="txtname" id="txtname" value="<?php echo $nombre; ?>">
+          <input class="input" type="number"  id="txttel"  name="txttel" value="<?php echo $telefono; ?>">
+          <input class="input" hidden type="number"  id="id"  name="id" value="<?php echo $id; ?>">
 
         
          
@@ -58,8 +69,8 @@ if(!isset($usuario)){
           
         </div>
         <div class="contenedor-botones">
-        <button type="button" name="crear" id="crear" class="button-siguiente">Crear</button>
-        <button type="button"  id="search" class="button-buscar">Buscar</button>
+        <button type="submit" class="button-siguiente">Editar</button>
+        <button type="button" onclick="javascript:window.history.go(-1); return false;"    class="button-buscar">Atras</button>
         </div>
       </form>
       </div>

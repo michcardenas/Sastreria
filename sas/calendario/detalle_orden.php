@@ -21,7 +21,7 @@ $fecha_formateada = date('Y-m-d H:i:s', strtotime($fecha));
 
             
                     ");
-   
+  
      function obtenerFechaFormateada($fecha) {
         // Convertir la fecha a un objeto DateTime
         $fecha_objeto = new DateTime($fecha);
@@ -85,9 +85,23 @@ $fecha_formateada = date('Y-m-d H:i:s', strtotime($fecha));
 
         <a class="inicio" href="../login/salirlogin.php">salir</a>
         </nav>
-       
+        <div class="centrar_estado">
+        <div class="valor_center">
+        <h3>Arreglado</h3>
+        <img class="indicador_imagen" src="../img/arreglado.png" alt="Imagen arreglado">
+        </div>
+
+        <div class="valor_center">
+        <h3>Entregado</h3>
+        <img class="indicador_imagen" src="../img/entregado.png" alt="Imagen arreglado">
+        </div>
+
+        <div class="valor_center">
+        <h3>Pendiente</h3>
+        <img class="indicador_imagen" src="../img/noarreglado.png" alt="Imagen arreglado">
+        </div>
+        </div>
                <!-- HTML !-->
-           <h2></h2>
         <div class="container"> 
             <div class="container-ordenes">
             <?php if($sql){
@@ -101,15 +115,21 @@ $fecha_formateada = date('Y-m-d H:i:s', strtotime($fecha));
                         $id_cliente = $row['id_cliente'];
                         $id_factura = $row['id'];
                         $estado = $row['estado'];
-                        $style_estado = "";
+                        $style_estado = "<img class='indicador_imagen' src='../img/noarreglado.png' alt='Imagen arreglado'>'";
                         if($estado == 2){
-                            $style_estado = "style='color:green;'";
+                            $style_estado = "<img class='indicador_imagen' src='../img/noarreglado.png' alt='Imagen arreglado'>'";
+                        }
+                        if($estado == 1){
+                            $style_estado = "<img class='indicador_imagen' src='../img/arreglado.png' alt='Imagen arreglado'>'";
 
                         }
+                        if($estado == 2){
+                            $style_estado = "<img class='indicador_imagen' src='../img/entregado.png' alt='Imagen arreglado'>'";
 
+                        }
                         $fecha_param = urlencode($fecha_entrega); // codificar la fecha como un parámetro GET
                         echo "<tr>";
-                        echo "<td><a ".$style_estado." href='detalle_cliente.php?id=".$id_cliente."&id_factura=".$id_factura."'>".$fecha_entrega."</a></td>";
+                        echo "<td>".$style_estado."<a  href='detalle_cliente.php?id=".$id_cliente."&id_factura=".$id_factura."'>".$fecha_entrega."</a></td>";
                         echo "<td>".$numero_clientes."</td>";
                         $horas = floor($total_minutos / 60);
                         $minutos = $total_minutos % 60;
@@ -117,6 +137,7 @@ $fecha_formateada = date('Y-m-d H:i:s', strtotime($fecha));
 
                         echo "</tr>";
                     }
+                  
                     echo "</table>";
                 }
                 ?>

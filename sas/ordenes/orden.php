@@ -88,8 +88,10 @@
         <div class="container">
         
         <div class="container-orden orden">
+        <h3 class="subtitulos_cards">Adicionar prenda</h3>
             <div class="info">
-                <h3 class="subtitulos_cards">Adicionar prenda</h3>
+                
+               
                 <select class="select_prenda" id="select_prenda" name="select_prenda">
                 <option value="">Seleccione prenda</option>
                 <option value="blusa">Blusa</option>
@@ -103,22 +105,37 @@
                 </select>
 
                 <input class="input" type="text" id="otro" name="otro" placeholder="Que prenda es?" style="visibility: hidden;">
-                
-                <textarea class="textarea" id="descripcion_arreglo"  placeholder="Descripción del arreglo"><?php $des_arreglo = isset ($descripcion_arreglo)? $descripcion_arreglo:"";  echo $des_arreglo; ?></textarea>
-                <input class="input valor" type="number" id="estimacion_min" name="estimacion_min" placeholder="Estimacion en min" >
+                <input class="input" type="number" id="cantidad" name="cantidad" placeholder="cantidad?" oninput="if(value.length>3)value=value.slice(0,3)" autocomplete="off">
+                    <textarea class="textarea" id="descripcion_arreglo" placeholder="Descripción del arreglo" maxlength="480"><?php 
+                    $descripcion_arreglo = isset($descripcion_arreglo) ? $descripcion_arreglo : 'null';
+                    if ($descripcion_arreglo !== 'null') {
+                        echo $descripcion_arreglo;
+                    } 
+                ?></textarea>
+
+                <div class="valor_center">
+                <img id="billete" src="../img/tiempo.png" alt=""> 
+                <input class="input valor" type="number" id="estimacion_min" name="estimacion_min" placeholder="Estimacion en min" oninput="if(value.length>3)value=value.slice(0,3)" autocomplete="off">
+                </div>
                 <!-- <select class="franja">
                 <option value="">franja horaria</option>
                 <option value="blusa">AM</option>
                 <option value="otros">PM</option>
                 </select> -->
-                <input class="input valor" type="number" id="valor"value="<?php $des_valor = isset ($valor)? $valor:"";  echo $des_valor; ?>" name="valor" placeholder="valor" >
+                <div class="valor_center">
+               <img id="billete" src="../img/billete.png" alt=""> <input class="input valor" type="text" id="valor" value="<?php $des_valor = isset ($valor)? $valor:"";  echo $des_valor; ?>" name="valor" placeholder="valor" >
+               </div>
+
+
                 
 
 
             
                 
             </div>
-            <button >
+          
+        </div>
+        <button >
                 <span class="button_top" id="guardarorden"> Guardar
                 </span>
                 </button>
@@ -131,9 +148,7 @@
                 </span>
                 </button>
         </div>
-        
-        </div>
-        
+      
      
        
     

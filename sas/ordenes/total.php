@@ -67,21 +67,21 @@
             <h4>Detalle de orden</h4>
             <div class="table-responsive">
     <?php  
-    $fecha_actual = date('Y-m-d H:i:s');
-
+    date_default_timezone_set('America/Bogota');
+    $fecha_actual = date("Y-m-d");
     $sql1 = mysqli_query($conexion, "SELECT * FROM ordenes 
     WHERE id_cliente='$id' 
-    AND fecha_llegada_prenda >= DATE_SUB('$fecha_actual', INTERVAL 1 HOUR) AND factura = 0 ;
+    AND fecha_llegada_prenda >= DATE_SUB('$fecha_actual', INTERVAL 1 DAY) AND factura = 0 ;
     ");
 
 
     
-$sql3 = mysqli_query($conexion, "SELECT SUM(estimacion) AS estimacion_total,SUM(valor) AS total_valor, COUNT(prenda) AS prenda_totales FROM ordenes WHERE id_cliente='$id' AND factura = 0 AND fecha_llegada_prenda >= DATE_SUB('$fecha_actual', INTERVAL 1 HOUR);");
+$sql3 = mysqli_query($conexion, "SELECT SUM(cantidad) AS cantidad,SUM(estimacion) AS estimacion_total,SUM(valor) AS total_valor, COUNT(prenda) AS prenda_totales FROM ordenes WHERE id_cliente='$id' AND factura = 0 AND fecha_llegada_prenda >= DATE_SUB('$fecha_actual', INTERVAL 1 HOUR);");
 
 
     while($row = mysqli_fetch_array($sql3)){
         $valor_total     = $row['total_valor'];
-        $prenda_totales     = $row['prenda_totales'];
+        $prenda_totales     = $row['cantidad'];
         $estimacion_total     = $row['estimacion_total'];
         
         }
@@ -101,19 +101,21 @@ $sql3 = mysqli_query($conexion, "SELECT SUM(estimacion) AS estimacion_total,SUM(
     if ($sql1) {
         $valore['existe'] = 0;
         
-       echo "<table>
+       echo "<table class='responsive-table'>
               <tr>
                 
-                <th>Prenda</th>
+                <th style='font-size: smaller;'>Prenda</th>
+                <th style='font-size: smaller;'>Cantidad</th>
                
-                <th>Descripción</th>
-                <th>Valor</th>
+                <th style='font-size: smaller;'>Descripción</th>
+                <th style='font-size: smaller;'>Valor</th>
                 <th>Borrar</th>
               </tr>";
               
         while ($consulta = mysqli_fetch_array($sql1)) {
             $valore['existe'] = 1;
             $id = $consulta['id'];
+            $cantidad = $consulta['cantidad'];
             $id_cliente = $consulta['id_cliente'];
             $prenda = $consulta['prenda'];
             $otro = $consulta['otro'];
@@ -124,10 +126,12 @@ $sql3 = mysqli_query($conexion, "SELECT SUM(estimacion) AS estimacion_total,SUM(
             echo "<tr>
                    
                     <td>$prenda</td>
+                    <td style='font-size: smaller;'>$cantidad</td>
+
                     
-                    <td style='white-space: pre-wrap;'>$descripcion_arreglo</td>
-                    <td>$valor</td>
-                    <td><a  onclick='borrarRegistro($id)'><img class='basura' src='../img/basura.png' alt='basura'></a></td>
+                    <td style='font-size: smaller;'style='white-space: pre-wrap;'>$descripcion_arreglo</td>
+                    <td>$".number_format($valor, 0, '.', ',')."</td>
+                    <td ><a  onclick='borrarRegistro($id)'><img class='basura' src='../img/basura.png' alt='basura'></a></td>
                   </tr>";
                    
         }
@@ -138,25 +142,31 @@ $sql3 = mysqli_query($conexion, "SELECT SUM(estimacion) AS estimacion_total,SUM(
     }
 ?>
 </div>
+<input class="input" required type="text" id="estimacion_total" name="estimacion_total" value="<?php echo $estimacion_total; ?> " style="visibility: hidden;">
+                    <input class="input" required type="text" id="estimacion_total" name="estimacion_total" value="<?php echo $factura_orden;  ?> " style="visibility: hidden;">
   <div class="container-orden factura">
-                    <div class="info">
-                    <h3 class="subtitulos_cards">Confirmacion de factura</h3>
-                    <h6 class="subtitulos_factura">Factura numero <?php echo $id_factura;  ?></h6>
-                    <h6 class="subtitulos_factura">Prendas totales <?php echo $prenda_totales;   ?></h6>
-                    <div class="input_total" >
-                    <input class="input" type="text" id="estimacion_total" name="estimacion_total" value="<?php echo $estimacion_total; ?> " style="visibility: hidden;">
-                    <input class="input" type="text" id="estimacion_total" name="estimacion_total" value="<?php echo $factura_orden;  var_dump($factura_orden)?> " style="visibility: hidden;">
+        
+                        
+                    <h3 class="subtitulos_cards">Orden numero <?php echo $id_factura;  ?></h3>
+
+                  <h6 class="subtitulos_factura"></h6>
+                    
+                  <div  class="input_orden">
                     <div class="input_total_individual" > <h6>Fecha de entrega</h6>   
-                    <input   type="date" name="fecha_entrega" id="fecha_entrega" >
+                    <input required  type="date" name="fecha_entrega" id="fecha_entrega" >
+                    </div>
+                    <div class="input_total_individual" >
+                    <h6>Prendas totales</h6>  
+                    <input class="input" readonly type="number " required  id="prenda_totales"  name="prenda_totalesl" value="<?php echo $prenda_totales; ?>">
                     </div>
                     <div class="input_total_individual" >
                     <h6>Sub-total</h6>  
-                    <input class="input" type="number"  id="sub-total"  name="sub-total" value="<?php echo $valor_total; ?>">
+                    <input class="input" type="text " required  id="sub-total"  name="sub-total" value="<?php echo $valor_total; ?>">
                     </div>
                     <div class="input_total_individual" >
                     <h6>Franja horaria</h6>  
                     
-                    <select class="select_prenda" id="franja_horaria" name="franja_horaria">
+                    <select required class="select_prenda" id="franja_horaria" name="franja_horaria">
                     <option value="">Seleccione</option>
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
@@ -166,19 +176,35 @@ $sql3 = mysqli_query($conexion, "SELECT SUM(estimacion) AS estimacion_total,SUM(
                     <div class="input_total_individual" >
                     <h6>Abono</h6>  
                     
-                    <input class="input" type="number"  id="abono"  name="abono" required>
+                    <input class="input" type="text" placeholder="ingrese abono" id="abono"  name="abono" required>
+                  
+                <td> <h6>Tipo de pago</h6></td>
+
+                <select  id="tipo_pago">
+                <option value="" >---Seleccione---</option>
+
+                    <option value="Efectivo" >Efectivo</option>
+                    <option value="Nequi" >Nequi</option>
+                    <option value="Daviplata">Daviplata</option>
+                
+                </select>
+     
                     </div>
                     <div class="input_total_individual" >
                     <h6>Total</h6>  
                     
-                    <input class="input" type="number"  id="valor_total"  name="Total" >
+                    <input required class="input" type="text"  id="valor_total"  name="Total" >
                     </div>
                     
-                    </div>
+                    
+                
                 
                     
-                    </div>
+        </div>
 
+                
+                </div>
+                </div>
                 </div>
 
             <div class="botones_total">
@@ -202,6 +228,7 @@ $sql3 = mysqli_query($conexion, "SELECT SUM(estimacion) AS estimacion_total,SUM(
         <input class="input" type="text" id="id_factura" name="otro" value="<?php echo $id_factura; ?>" style="visibility: hidden;">  
         <input class="input" type="text" id="id_cliente" name="otro" value="<?php echo $id_cliente;  ?>" style="visibility: hidden;">  
     <script src="../js/app.js" ></script>
+    
     <script>
           function borrarRegistro(id) {
     if (confirm("¿Está seguro de que desea borrar este registro?")) {
@@ -221,6 +248,26 @@ $sql3 = mysqli_query($conexion, "SELECT SUM(estimacion) AS estimacion_total,SUM(
         });
     }
 }
+$(document).ready(function() {
+    $('#sub-total').each(function() {
+        // obtener el valor actual del campo
+        var valor = $(this).val();
+
+        // remover cualquier formato existente (puntos, comas y símbolo de moneda)
+        valor = parseFloat(valor.replace(/[^0-9-.]/g, ''));
+
+        // verificar si el valor es un número
+        if (!isNaN(valor)) {
+            // formatear el número
+            valor = valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
+
+            // establecer el valor formateado de nuevo en el campo
+            $(this).val(valor);
+        }
+    });
+});
+
+
 
     </script>
     

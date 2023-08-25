@@ -7,7 +7,7 @@ $id_factura                = $_GET['id_factura'];
 
 
 // Consulta a la base de datos
-$consulta = "SELECT f.id_factura, f.sub_total, f.abono, f.total, f.franja_horaria, f.fecha_entrega, c.nombre, c.telefono,o.prenda,o.otro,o.descripcion_arreglo,o.valor 
+$consulta = "SELECT f.id_factura,f.estado, f.sub_total, f.abono, f.total, f.franja_horaria, f.fecha_entrega, c.nombre, c.telefono,o.prenda,o.otro,o.descripcion_arreglo,o.valor 
              FROM factura f
              JOIN clientes c ON f.id_cliente = c.id
              JOIN ordenes o ON o.factura = f.id_factura
@@ -50,7 +50,7 @@ $html = '
     </head>
 </head>
 <body>
-<nav class="nav-index">
+<nav id="Guardar_fact" class="nav-index">
 <h3 class="inicio" >Detalles de orden</h3>
 <a  href="../index.php" ><img style="width: 3rem;" id="imagen_nav" class="imagen_nav" src="../img/sasindex.png" alt="index"></a>
 <a class="inicio" href="../login/salirlogin.php">salir</a>
@@ -95,7 +95,7 @@ $html = '
 
 // Imprimir la factura en el navegador
 echo $html;
-$consulta1 = "SELECT f.id_factura, f.sub_total, f.abono, f.total, f.franja_horaria, f.fecha_entrega, c.nombre, c.telefono,o.prenda,o.otro,o.descripcion_arreglo,o.valor 
+$consulta1 = "SELECT f.id_factura, f.sub_total, f.abono, f.total, f.franja_horaria, f.fecha_entrega, c.nombre, c.telefono,o.prenda,o.otro,o.descripcion_arreglo,o.valor,f.estado,o.cantidad,f.numero_prendas
              FROM factura f
              JOIN clientes c ON f.id_cliente = c.id
              JOIN ordenes o ON o.factura = f.id_factura
@@ -109,6 +109,7 @@ $html1 = '<table style="width:5rem;">
     <thead>
         <tr>
             <th>Prenda</th>
+            <th>cantidad</th>
             <th>Otro</th>
             <th>Descripcion Arreglo</th>
             <th>valor</th>
@@ -116,63 +117,91 @@ $html1 = '<table style="width:5rem;">
     </thead>
     <tbody>';
 
-foreach ($resultado1 as $factura) {
+foreach ($resultado1 as $factura)
+{
     $html1 .= '<tr>
         <td>' . $factura['prenda'] . '</td>
+        <td>' . $factura['cantidad'] . '</td>
         <td>' . $factura['otro'] . '</td>
         <td>' . $factura['descripcion_arreglo'] . '</td>
-        <td>' . $factura['valor'] . '</td>
+        <td>$' .number_format( $factura['valor'], 0, '.', ',') . '</td>
     </tr>';
 }
 
-$html1 .= '</tbody></table>
+$html1 .= '
+
+</tbody></table>
 
 </div>
 <div class="valores">
 <table>
 <tr>
-
-<td> <h6>sub-total</h6><input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="'.$factura['sub_total'].'"></td>
-</tr>
 <tr>
 
-<td> <h6>Abono</h6><input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="'.$factura['abono'].'"></td>
+<td> <h6>Total prendas</h6><input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="'.$factura['numero_prendas'].'"></td>
+</tr>
+<td>
+    <h6>sub-total</h6>
+    <input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="$'.number_format($factura['sub_total'], 0, '.', ',').'">
+</td>
 </tr>
 <tr>
+    <td>
+        <h6>Abono</h6>
+        <input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="$'.number_format($factura['abono'], 0, '.', ',').'">
+    </td>
+</tr>
+<tr>
+    <td>
+        <h6>Total</h6>
+        <input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="$'.number_format($factura['total'], 0, '.', ',').'">
+    </td>
+</tr>
 
-<td> <h6>Total</h6><input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="'.$factura['total'].'"></td>
 </tr>
 </table>
-</div>
-<div class="terminos">
-<tr>
-<td> <h6>Fecha de entrega</h6></td>
-<td><input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="'.$fecha_sin_hora = date('Y-m-d', strtotime($factura['fecha_entrega'])).'/'.$factura['franja_horaria'].'"></td>
-</tr>
-<tr>
-<td> <h6>*Sus arreglos tienen garantia de 15 dias calendario a partir de la fecha de entrega (Segun terminos y condiciones)</h6</td>
-<td> <h6>*Despues de 30 dias a partir de la fecha de entrega no se responde por ropa que aun no se halla entregado</h6</td>
+</div>';
 
-</tr>
+if ($factura['estado'] != 2) {
+  $html1 .= '<div class="terminos">
+  <tr class="fecha_entrega_real">
+  <td> <h6>Fecha de entrega</h6></td>
+  <td><input class="input readonly total" readonly  type="text" name="txtname" id="txtname" value="'.$fecha_sin_hora = date('Y-m-d', strtotime($factura['fecha_entrega'])).'/'.$factura['franja_horaria'].'"></td>
+  </tr>
+  <tr>
+  <td> <h6>*Sus arreglos tienen garantia de 15 dias calendario a partir de la fecha de entrega (Segun terminos y condiciones)</h6</td>
+  <td> <h6>*Despues de 30 dias a partir de la fecha de entrega no se responde por ropa que aun no se halla entregado</h6</td>
+  </tr>
+  </div>';
+}
 
+if ($factura['estado'] == 2) {
+    $html1 .= '<div class="terminos">
+    <tr class="fecha_entrega_real">
+    <td> <h2 style="color:#9E4784;">CANCELADA</h2></td>
+  
+    </tr>
+    
+    </div>';
+  }
 
-
-
-</div>
-<button  style="margin-top:2rem;" >
-<span class="button_top" ><a id="imprimir" >Guardar</a> 
+$html1 .= '<button  style="margin-top:2rem;" >
+<div id="Guardar_fact">
+<span class="button_top"  ><a id="imprimir" >Guardar</a> 
 </span>
 </button>
 <button  style="margin-top:2rem;" >
-<span class="button_top" ><a target="_blank" id="enviar" href="https://api.whatsapp.com/send?phone='.$factura['telefono'].'&text=Desde la sastrería Chisgas, le informamos que su prenda estára lista para ser recogida. Por favor, pase por nuestra tienda el '.$fecha_sin_hora = date('d-m-Y', strtotime($factura['fecha_entrega'])).' en el horario '.$factura['franja_horaria'].' para retirarla. ¡Le esperamos con su prenda lista para lucirla con estilo!.">Enviar mensaje</a>
+<span class="button_top" id="Guardar_fact" ><a target="_blank" id="enviar" href="https://api.whatsapp.com/send?phone=+57'.$factura['telefono'].'&text=Desde la sastrería Chisgas, le informamos que su prenda estára lista para ser recogida. Por favor, pase por nuestra tienda el '.$fecha_sin_hora = date('d-m-Y', strtotime($factura['fecha_entrega'])).' en el horario '.$factura['franja_horaria'].' para retirarla. ¡Le esperamos con su prenda lista para lucirla con estilo!.">Enviar mensaje</a>
 </a> 
 </span>
 </button>
 </div>
 </div>
+</div>
 </div>';
 
 echo $html1;
+
 
 // Mostramos el HTML generado
 

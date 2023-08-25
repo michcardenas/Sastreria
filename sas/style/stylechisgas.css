@@ -78,7 +78,7 @@
   display: flex;
   justify-content: space-around;
   align-items:center;
-  height: 10rem;
+  height: auto;
 
   flex-wrap: wrap;
   border-radius: 50px;
@@ -91,12 +91,7 @@
 
   
 }
-.container-orden.orden {
-  margin-top: 2rem;
-  height: 25rem;
-  width: 50rem;
-  
-}
+
 
 .select_prenda{
   outline: none;
@@ -330,12 +325,16 @@ input[type="date"]{
     cursor: pointer;
     border-radius: 3px;
 }
+
+/* Total container orden */
 .container-orden.factura{
   margin-top: 2rem;
   margin-bottom: 2rem;
-  height: 28rem;
+  height: auto;
 }
-
+.subtitulos_cards{
+  padding: 1.5rem;
+}
 
 .input_total{
   display: flex;
@@ -344,10 +343,7 @@ input[type="date"]{
   width: 17rem;
 }
 
-h6.subtitulos_factura{
-  margin: 1rem;
-  margin-left: 5rem;
-}
+
 .input_total_individual{
   margin: 0.2rem;
 }
@@ -428,6 +424,9 @@ margin: 0.2rem;
   align-items: center;
   flex-wrap: wrap;
 }
+.responsive-table{
+  
+}
 
 @media (max-width: 1250px) {
   /* body{
@@ -454,9 +453,23 @@ margin: 0.2rem;
 .input{
   width: auto;
 }
+.botones_total{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 2rem;
+  }
 /* .input.readonly{
   width: 47%;
 } */
+.centrar_estado{
+  display: flex;
+  margin: 2rem;
+}
+.indicador_imagen {
+  width: 1rem;
+  margin-left: 2rem;
+}
 }
 .container-ordenes{
   display: flex;
@@ -479,4 +492,37 @@ margin: 0.2rem;
 
 .table-ordenes{
   width: 15rem;
+}
+.info{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+#billete{
+  width: 2rem;
+  position: relative;
+    top: 10px; 
+}
+#usuario{
+  width: 2rem;
+  position: relative;
+    top: 10px; 
+    opacity: 60%;
+}
+#celular{
+  width: 2rem;
+  position: relative;
+    top: 10px; 
+    opacity: 60%;
+}
+#cantidad{
+  width: 6rem;
+}
+
+
+@media print {
+  #Guardar_fact {
+    display: none;
+  }
 }

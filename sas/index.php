@@ -33,7 +33,9 @@ if(!isset($usuario)){
        <div class="container">
        <a href="clientes/clientes.php" class="button-27" role="button"><img src="img/factura.png" class="factura" alt=""><br> Nueva orden </a>
        <a href="calendario/calendario.php" class="button-27" role="button"><img src="img/calendario.png" class="factura" alt=""><br> Calendario </a>
-       <a class="button-27" role="button">Estadisticas</a>
+       <a href="caja/caja.php" class="button-27" role="button"><img src="img/caja-registradora.png" class="factura" alt=""><br> Caja </a>
+       <!-- <a href="caja/estadistica.php" class="button-27" role="button"><img src="img/estadistica.png" class="factura" alt=""><br> Estadistica </a>  -->
+
        </div>
        </div>
 </body>

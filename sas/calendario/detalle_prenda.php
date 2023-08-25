@@ -37,7 +37,32 @@ if(!isset($usuario)){
            
 
         }
-      
+        $consulta1 = "SELECT f.id_factura, f.sub_total, f.abono, f.total, f.franja_horaria, f.fecha_entrega, c.nombre, c.telefono,o.prenda,o.otro,o.descripcion_arreglo,o.valor,o.estimacion,o.estado,o.id
+        FROM factura f
+        JOIN clientes c ON f.id_cliente = c.id
+        JOIN ordenes o ON o.factura = f.id_factura
+        WHERE f.id = $factura";
+
+        // Ejecutamos la consulta y almacenamos los resultados en una variable $resultado
+        $resultado1 = mysqli_query($conexion, $consulta1);
+        while($registro = mysqli_fetch_assoc($resultado1)) {
+            $estados[] = $registro['estado'];
+        }
+       
+        $estado_final = array_count_values($estados);
+
+        $arreglado = (isset($estado_final[1]) ? $estado_final[1] : 0);
+        $pendiente = (isset($estado_final[0]) ? $estado_final[0] : 0);
+        $entregado = (isset($estado_final[2]) ? $estado_final[2] : 0);
+        $estado_factura=0;
+    if($arreglado != 0 && $pendiente == 0 && $entregado == 0 || $entregado > 0){
+        $estado_factura=1;
+    }
+  
+    if($arreglado == 0 && $pendiente == 0 && $entregado != 0){
+        $estado_factura=2;
+    }
+
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -63,6 +88,7 @@ if(!isset($usuario)){
         </nav>
         <input class="input"  style="visibility: hidden;"  type="id"  id="id_cliente"  name="id_cliente" value="<?php echo $id_cliente; ?>">
         <input class="input"  style="visibility: hidden;"  type="id"  id="factura"  name="factura" value="<?php echo $factura; ?>">
+        <input class="input"  style="visibility: hidden;"  type="id"  id="estado_factura"   value="<?php echo $estado_factura; ?>">
 
 
                <!-- HTML !-->
@@ -115,7 +141,7 @@ if(!isset($usuario)){
         
         <select id="estado">
             <option value="0" <?php if ($estado == 0) { echo 'selected'; } ?>>Pendiente</option>
-            <option value="3" <?php if ($estado == 3) { echo 'selected'; } ?>>En Proceso</option>
+           <!-- <option value="3" <?php //if ($estado == 3) { echo 'selected'; } ?>>En Proceso</option> -->
             <option value="1" <?php if ($estado == 1) { echo 'selected'; } ?>>Arreglado</option>
             <option value="2" <?php if ($estado == 2) { echo 'selected'; } ?>>Entregado</option>
         </select>
@@ -124,14 +150,14 @@ if(!isset($usuario)){
         </div>
         </div>
 
-<div><button  style="margin-top:2rem;margin-left:2rem; " >
-<span class="button_top" ><a id="actualizar_factura" >Atras</a> 
+<div><button  onclick="goBack()" style="margin-top:2rem;margin-left:2rem; " >
+<span class="button_top" ><a >Atras</a> 
 </span>
 </button>
 
 </div>
-<div><button  style="margin-top:2rem;margin-left:2rem; " >
-<span class="button_top" ><a id="actualizar_prenda" >Guardar</a> 
+<div><button id="actualizar_prenda" style="margin-top:2rem;margin-left:2rem; " >
+<span class="button_top" ><a  >Guardar</a> 
 </span>
 </button>
 
